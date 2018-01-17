@@ -328,6 +328,7 @@ where
         } else if a.is_set(ArgSettings::TakesValue) {
             let mut ob = OptBuilder::from(a);
             ob.s.unified_ord = self.flags.len() + self.opts.len();
+            // WILL options are being built here
             self.opts.push(ob);
         } else {
             let mut fb = FlagBuilder::from(a);
@@ -1951,9 +1952,17 @@ where
             debug!("Parser::add_defaults:iter:{}:", o.b.name);
             add_val!(self, o, matcher);
         }
+
+        if self.opts.is_empty() {
+            debugln!("WILL!! There were no options");
+        }
         for p in self.positionals.values() {
             debug!("Parser::add_defaults:iter:{}:", p.b.name);
             add_val!(self, p, matcher);
+        }
+
+        if self.positionals.is_empty() {
+            debugln!("WILL!! There were no positionals");
         }
         Ok(())
     }

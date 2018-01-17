@@ -488,6 +488,9 @@ impl<'a, 'b, 'z> Validator<'a, 'b, 'z> {
             ($how:ident, $_self:expr, $a:ident, $m:ident) => {{
                 $a.required_unless().map(|ru| {
                     ru.iter().$how(|n| {
+                        // TODO look up required version of the arg here, or else
+                        // already set them, e.g., we need to be able to find
+                        // the arg by its short variant
                         $m.contains(n) || {
                             if let Some(grp) = $_self.groups.iter().find(|g| &g.name == n) {
                                      grp.args.iter().any(|arg| $m.contains(arg))

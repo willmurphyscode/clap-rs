@@ -1088,6 +1088,7 @@ impl<'a, 'b> Arg<'a, 'b> {
     /// [`Arg::required_unless_one(names)`]: ./struct.Arg.html#method.required_unless_one
     /// [`Arg::required_unless_all`]: ./struct.Arg.html#method.required_unless_all
     pub fn required_unless_one(mut self, names: &[&'a str]) -> Self {
+        // TODO look up whether s has long or short versions
         if let Some(ref mut vec) = self.b.r_unless {
             for s in names {
                 vec.push(s);

@@ -688,9 +688,18 @@ impl<'w> Help<'w> {
         let opts = parser.has_opts();
         let subcmds = parser.has_visible_subcommands();
 
-        let unified_help = parser.is_set(AppSettings::UnifiedHelpMessage);
-
         let mut first = true;
+
+        if pos {
+            if !first {
+                self.writer.write_all(b"\n\n")?;
+            }
+            color!(self, "ARGS:\n", warning)?;
+            self.write_args_unsorted(positionals!(parser.app))?;
+            first = false;
+        }
+
+        let unified_help = parser.is_set(AppSettings::UnifiedHelpMessage);
 
         if unified_help && (flags || opts) {
             let opts_flags = args!(parser.app).filter(|a| a.has_switch());
@@ -711,15 +720,6 @@ impl<'w> Help<'w> {
                 self.write_args(opts!(parser.app))?;
                 first = false;
             }
-        }
-
-        if pos {
-            if !first {
-                self.writer.write_all(b"\n\n")?;
-            }
-            color!(self, "ARGS:\n", warning)?;
-            self.write_args_unsorted(positionals!(parser.app))?;
-            first = false;
         }
 
         if subcmds {

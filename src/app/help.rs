@@ -233,6 +233,7 @@ impl<'w> Help<'w> {
                 if first {
                     first = false;
                 } else {
+                    debugln!("Help::write_args:: writing extra new line");
                     self.writer.write_all(b"\n")?;
                 }
                 self.write_arg(arg)?;
@@ -703,11 +704,17 @@ impl<'w> Help<'w> {
 
         if unified_help && (flags || opts) {
             let opts_flags = args!(parser.app).filter(|a| a.has_switch());
+            if !first {
+                self.writer.write_all(b"\n\n")?;
+            }
             color!(self, "OPTIONS:\n", warning)?;
             self.write_args(opts_flags)?;
             first = false;
         } else {
             if flags {
+                if !first {
+                    self.writer.write_all(b"\n\n")?;
+                }
                 color!(self, "FLAGS:\n", warning)?;
                 self.write_args(flags!(parser.app))?;
                 first = false;

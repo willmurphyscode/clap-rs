@@ -939,6 +939,11 @@ fn issue_702_multiple_values() {
 
 #[test]
 fn long_about() {
+    // HYPOTHESIS
+    // long_about causes a difference in layout of the
+    // args section, which appends a trailing space
+    // ==> I need to find the code in the arg printer that
+    // knows whether long_about was called
     let app = App::new("myapp")
         .version("1.0")
         .author("foo")

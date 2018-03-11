@@ -1,6 +1,7 @@
 #[allow(unused_imports, dead_code)]
 mod test {
     use std::str;
+    use std::fmt::Write as StdWrite;
     use std::io::{Cursor, Write};
 
     use regex::Regex;
@@ -11,7 +12,7 @@ mod test {
         where S: AsRef<str>,
               S2: AsRef<str>
     {
-        let re = Regex::new("\x1b[^m]*m").unwrap();
+        let re = Regex::new("\x1b[^m]*m").unwrap(); // match terminal control characters
         // Strip out any mismatching \r character on windows that might sneak in on either side
         let ls = l.as_ref().trim().replace("\r", "");
         let rs = r.as_ref().trim().replace("\r", "");
@@ -35,6 +36,29 @@ mod test {
         let err = res.unwrap_err();
         err.write_to(&mut buf).unwrap();
         let content = buf.into_inner();
+
+
+        // let mut s = String::new();
+        // let mut ix = 0;
+        // for byte in content.clone() {
+        //     write!(&mut s, "{:3} ", byte).expect("Unable to write");
+        //     ix += 1;
+        //     if ix % 10 == 0 {
+        //         write!(&mut s, "\n");
+        //     }
+        // }
+        // println!("{}\n\n", s);
+        // ix = 0;
+        // let mut s2 = String::new();
+        // for &byte in right.as_bytes() {
+        //     write!(&mut s2, "{:3} ", byte).expect("Unable to write");
+        //     ix += 1;
+        //     if ix % 10 == 0 {
+        //         write!(&mut s2, "\n");
+        //     }
+        // }
+        // println!("{}", s2);
+
         let left = String::from_utf8(content).unwrap();
         assert_eq!(stderr, err.use_stderr(),
             "Should Use STDERR failed. Should be {} but is {}", stderr, err.use_stderr());

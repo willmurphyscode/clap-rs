@@ -195,7 +195,7 @@ impl<'w> Help<'w> {
             if first {
                 first = false;
             } else {
-                self.writer.write_all(b"\n")?;
+                self.writer.write_all(b"\n")?; // WILL - this is not the line
             }
             self.write_arg(arg)?;
         }
@@ -233,7 +233,6 @@ impl<'w> Help<'w> {
                 if first {
                     first = false;
                 } else {
-                    debugln!("Help::write_args:: writing extra new line");
                     self.writer.write_all(b"\n")?;
                 }
                 self.write_arg(arg)?;
@@ -245,6 +244,7 @@ impl<'w> Help<'w> {
     /// Writes help for an argument to the wrapped stream.
     fn write_arg<'b, 'c>(&mut self, arg: &Arg<'b, 'c>) -> io::Result<()> {
         debugln!("Help::write_arg;");
+        // WILL! Can self.short or self.long write an extra newline?
         self.short(arg)?;
         self.long(arg)?;
         let spec_vals = self.val(arg)?;
@@ -433,7 +433,7 @@ impl<'w> Help<'w> {
         };
         let mut help = String::from(h) + spec_vals;
         let nlh = self.next_line_help || arg.is_set(ArgSettings::NextLineHelp) || self.use_long;
-        debugln!("Help::help: Next Line...{:?}", nlh);
+        debugln!("Help::help: Next Line...{:?}", nlh); // WILL check on this line...
 
         let spcs = if nlh || self.force_next_line {
             12 // "tab" * 3

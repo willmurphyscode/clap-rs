@@ -197,7 +197,7 @@ impl<'w> Help<'w> {
             if first {
                 first = false;
             } else {
-                self.writer.write_all(b"\n")?; // WILL - this is not the line
+                self.writer.write_all(b"\n")?;
             }
             self.write_arg(arg, current_arg_ix < arg_c)?;
             current_arg_ix += 1;
@@ -247,7 +247,6 @@ impl<'w> Help<'w> {
     /// Writes help for an argument to the wrapped stream.
     fn write_arg<'b, 'c>(&mut self, arg: &Arg<'b, 'c>, prevent_nlh: bool) -> io::Result<()> {
         debugln!("Help::write_arg;");
-        // WILL! Can self.short or self.long write an extra newline?
         self.short(arg)?;
         self.long(arg)?;
         let spec_vals = self.val(arg)?;
@@ -436,7 +435,7 @@ impl<'w> Help<'w> {
         };
         let mut help = String::from(h) + spec_vals;
         let nlh = self.next_line_help || arg.is_set(ArgSettings::NextLineHelp) || self.use_long;
-        debugln!("Help::help: Next Line...{:?}", nlh); // WILL check on this line...
+        debugln!("Help::help: Next Line...{:?}", nlh);
 
         let spcs = if nlh || self.force_next_line {
             12 // "tab" * 3
@@ -478,7 +477,7 @@ impl<'w> Help<'w> {
             write!(self.writer, "{}", part)?;
         }
         if !prevent_nlh && !help.contains('\n') && (nlh || self.force_next_line) {
-            write!(self.writer, "\n")?; // Will this is the line
+            write!(self.writer, "\n")?;
         }
         Ok(())
     }
@@ -812,7 +811,6 @@ impl<'w> Help<'w> {
             ($thing:expr) => {{
                 let mut owned_thing = $thing.to_owned();
                 owned_thing = owned_thing.replace("{n}", "\n");
-                // WILL this does not get called when we'er writing the extra newline
                 write!(self.writer, "{}\n",
                             wrap_help(&owned_thing, self.term_w))?
             }};

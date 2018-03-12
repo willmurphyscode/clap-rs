@@ -191,13 +191,16 @@ impl<'w> Help<'w> {
             arg_v.push(arg)
         }
         let mut first = true;
+        let arg_c = arg_v.len();
+        let mut current_arg_ix = 0;
         for arg in arg_v {
             if first {
                 first = false;
             } else {
                 self.writer.write_all(b"\n")?; // WILL - this is not the line
             }
-            self.write_arg(arg)?;
+            self.write_arg(arg, current_arg_ix < arg_c)?;
+            current_arg_ix += 1;
         }
         Ok(())
     }
@@ -235,20 +238,20 @@ impl<'w> Help<'w> {
                 } else {
                     self.writer.write_all(b"\n")?;
                 }
-                self.write_arg(arg)?;
+                self.write_arg(arg, false)?;
             }
         }
         Ok(())
     }
 
     /// Writes help for an argument to the wrapped stream.
-    fn write_arg<'b, 'c>(&mut self, arg: &Arg<'b, 'c>) -> io::Result<()> {
+    fn write_arg<'b, 'c>(&mut self, arg: &Arg<'b, 'c>, prevent_nlh: bool) -> io::Result<()> {
         debugln!("Help::write_arg;");
         // WILL! Can self.short or self.long write an extra newline?
         self.short(arg)?;
         self.long(arg)?;
         let spec_vals = self.val(arg)?;
-        self.help(arg, &*spec_vals)?;
+        self.help(arg, &*spec_vals, prevent_nlh)?;
         Ok(())
     }
 
@@ -424,7 +427,7 @@ impl<'w> Help<'w> {
     }
 
     /// Writes argument's help to the wrapped stream.
-    fn help<'b, 'c>(&mut self, arg: &Arg<'b, 'c>, spec_vals: &str) -> io::Result<()> {
+    fn help<'b, 'c>(&mut self, arg: &Arg<'b, 'c>, spec_vals: &str, prevent_nlh: bool) -> io::Result<()> {
         debugln!("Help::help;");
         let h = if self.use_long {
             arg.long_help.unwrap_or_else(|| arg.help.unwrap_or(""))
@@ -474,8 +477,8 @@ impl<'w> Help<'w> {
             }
             write!(self.writer, "{}", part)?;
         }
-        if !help.contains('\n') && (nlh || self.force_next_line) {
-            write!(self.writer, "\n")?;
+        if !prevent_nlh && !help.contains('\n') && (nlh || self.force_next_line) {
+            write!(self.writer, "\n")?; // Will this is the line
         }
         Ok(())
     }
@@ -809,6 +812,7 @@ impl<'w> Help<'w> {
             ($thing:expr) => {{
                 let mut owned_thing = $thing.to_owned();
                 owned_thing = owned_thing.replace("{n}", "\n");
+                // WILL this does not get called when we'er writing the extra newline
                 write!(self.writer, "{}\n",
                             wrap_help(&owned_thing, self.term_w))?
             }};

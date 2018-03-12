@@ -126,6 +126,9 @@ tests subcommands
 USAGE:
     clap-test subcmd [FLAGS] [OPTIONS] [--] [scpositional]
 
+ARGS:
+    <scpositional>    tests positionals
+
 FLAGS:
     -f, --flag       tests flags
     -h, --help       Prints help information
@@ -133,10 +136,7 @@ FLAGS:
 
 OPTIONS:
     -o, --option <scoption>...     tests options
-    -s, --subcmdarg <subcmdarg>    tests other args
-
-ARGS:
-    <scpositional>    tests positionals";
+    -s, --subcmdarg <subcmdarg>    tests other args";
 
 static ISSUE_1046_HIDDEN_SCS: &'static str = "prog 1.0
 
@@ -404,14 +404,14 @@ USAGE:
     last <TARGET> [CORPUS] -- <ARGS>...
     last <SUBCOMMAND>
 
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
 ARGS:
     <TARGET>     some
     <CORPUS>     some
     <ARGS>...    some
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
 
 SUBCOMMANDS:
     help    Prints this message or the help of the given subcommand(s)
@@ -944,6 +944,8 @@ fn long_about() {
     // args section, which appends a trailing space
     // ==> I need to find the code in the arg printer that
     // knows whether long_about was called
+    // specifically, line 447 prints an extra new line 
+    // if long_about is used in an app.
     let app = App::new("myapp")
         .version("1.0")
         .author("foo")
